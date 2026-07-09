@@ -51,6 +51,10 @@ try {
   for (const file of requiredFiles) {
     if (!packedFiles.has(file)) throw new Error(`Packed package is missing ${file}`)
   }
+  for (const target of Object.values(packageMetadata.exports)) {
+    const packedTarget = target.replace(/^\.\//, '')
+    if (!packedFiles.has(packedTarget)) throw new Error(`Package export target is missing ${packedTarget}`)
+  }
 
   const forbiddenPrefixes = ['dist/', 'electron/', 'node_modules/', 'release/', 'scripts/', 'src/tests/']
   const forbiddenFile = [...packedFiles].find((file) => forbiddenPrefixes.some((prefix) => file.startsWith(prefix)))
@@ -64,8 +68,8 @@ try {
     type: 'module',
     dependencies: {
       [packageMetadata.name]: `file:${tarballPath}`,
-      react: packageMetadata.dependencies.react,
-      'react-dom': packageMetadata.dependencies['react-dom'],
+      react: packageMetadata.devDependencies.react,
+      'react-dom': packageMetadata.devDependencies['react-dom'],
     },
     devDependencies: {
       '@types/react': packageMetadata.devDependencies['@types/react'],
@@ -94,14 +98,17 @@ import {
   Dialog,
   EmptyState,
   ErrorState,
+  Facet,
   LoadingState,
   MetricTile,
   PageHeader,
   StatusDot,
+  Summary,
   TemplateApp,
   TemplateProviders,
   ThemeProvider,
   ToastProvider,
+  Tooltip,
   matchesCommand,
   defineSurfaceRegistry,
   isAppRoute,
@@ -115,6 +122,7 @@ import {
 } from '${packageMetadata.name}'
 import type {
   AppRoute,
+  AppShellChrome,
   AppShellProps,
   BadgeProps,
   CardProps,
@@ -123,10 +131,13 @@ import type {
   DialogProps,
   EmptyStateProps,
   ErrorStateProps,
+  FacetProps,
   LoadingStateProps,
   MetricTileProps,
   PageHeaderProps,
   StatusDotProps,
+  SummaryItem,
+  SummaryProps,
   ShellSlot,
   SurfaceCommand,
   SurfaceDefinition,
@@ -141,25 +152,26 @@ import type {
   ToastContextValue,
   ToastInput,
   ToastProviderProps,
+  TooltipProps,
   WebsiteContent,
   WebsiteFaq,
   WebsiteFeature,
 } from '${packageMetadata.name}'
 
 const values = [
-  APP_ROUTES, AppShell, Badge, Card, CommandPalette, Dialog, EmptyState, ErrorState,
-  LoadingState, MetricTile, PageHeader, StatusDot, TemplateApp,
+  APP_ROUTES, AppShell, Badge, Card, CommandPalette, Dialog, EmptyState, ErrorState, Facet,
+  LoadingState, MetricTile, PageHeader, StatusDot, Summary, TemplateApp,
   TemplateProviders, ThemeProvider, ToastProvider, defineSurfaceRegistry,
   isAppRoute, isRouteEnabled, matchesCommand, selectCommandItems,
-  selectEnabledRoutes, selectNavItems,
+  selectEnabledRoutes, selectNavItems, Tooltip,
   templateConfig, useTheme, useToast,
 ]
-type PublicTypes = AppRoute | AppShellProps | BadgeProps | CardProps |
-  CommandPaletteProps | DemoRecord | DialogProps | EmptyStateProps | ErrorStateProps |
-  LoadingStateProps | MetricTileProps | PageHeaderProps | StatusDotProps |
+type PublicTypes = AppRoute | AppShellChrome | AppShellProps | BadgeProps | CardProps |
+  CommandPaletteProps | DemoRecord | DialogProps | EmptyStateProps | ErrorStateProps | FacetProps |
+  LoadingStateProps | MetricTileProps | PageHeaderProps | StatusDotProps | SummaryItem | SummaryProps |
   ShellSlot | SurfaceCommand | SurfaceDefinition | SurfaceNav | SurfaceRegistry |
   TemplateConfig | TemplateProvidersProps | Theme | ThemeContextValue |
-  ThemeProviderProps | Toast | ToastContextValue | ToastInput | ToastProviderProps |
+  ThemeProviderProps | Toast | ToastContextValue | ToastInput | ToastProviderProps | TooltipProps |
   WebsiteContent | WebsiteFaq | WebsiteFeature
 const publicType: PublicTypes | undefined = undefined
 void values

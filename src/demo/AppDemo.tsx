@@ -35,7 +35,7 @@ export function AppDemo({ route, config }: AppDemoProps) {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {config.metrics.map((metric) => (
           <MetricTile key={metric.label} label={metric.label} value={metric.value} change={metric.change}>
-            <StatusDot tone={metric.tone} />
+            <StatusDot tone={metric.tone} label={metric.tone} />
           </MetricTile>
         ))}
       </section>
@@ -142,7 +142,7 @@ function DetailDemo({ config }: { readonly config: TemplateConfig }) {
             <div className="grid gap-3 sm:grid-cols-3">
               {config.records.slice(1, 4).map((related) => (
                 <div key={related.id} className="card-inner-lg">
-                  <div className="flex items-start justify-between gap-2"><p className="text-sm font-medium text-theme-text-primary">{related.name}</p><StatusDot tone={related.status} /></div>
+                  <div className="flex items-start justify-between gap-2"><p className="text-sm font-medium text-theme-text-primary">{related.name}</p><StatusDot tone={related.status} label={related.statusLabel} /></div>
                   <p className="mt-2 text-xs text-theme-text-tertiary">{related.owner} · {related.updated}</p>
                 </div>
               ))}

@@ -60,4 +60,15 @@ test('surface registry rejects a disabled default and duplicate channel metadata
       },
     },
   })).toThrow(/command ids must be unique/i)
+
+  expect(() => defineSurfaceRegistry({
+    ...templateConfig.surfaces,
+    routes: {
+      ...templateConfig.surfaces.routes,
+      '/site': {
+        ...templateConfig.surfaces.routes['/site'],
+        nav: { ...templateConfig.surfaces.routes['/site'].nav, order: Number.NaN },
+      },
+    },
+  })).toThrow(/navigation order values must be non-negative safe integers/i)
 })

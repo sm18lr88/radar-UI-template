@@ -36,7 +36,8 @@ npm run desktop:install-smoke
 Check packaged contents when dependencies or Electron Builder config changes:
 
 ```powershell
-$asar = "templates/radar-ui-template/release/win-unpacked/resources/app.asar"
+npm run desktop:dir
+$asar = "release/win-unpacked/resources/app.asar"
 node -e "const asar=require('@electron/asar'); const files=asar.listPackage(process.argv[1]); console.log(files.filter(f=>f.includes('node_modules')));" $asar
 ```
 
@@ -62,7 +63,8 @@ npm audit --omit=dev
 Scripts must clean their own staging directories. Before final response, verify no task artifacts remain:
 
 ```powershell
-Get-ChildItem -LiteralPath "D:\tmp" -Force -Recurse -ErrorAction SilentlyContinue |
+$tempRoot = [IO.Path]::GetTempPath()
+Get-ChildItem -LiteralPath $tempRoot -Force -ErrorAction SilentlyContinue |
   Where-Object { $_.Name -like "radar-ui-template*" -or $_.FullName -like "*radar-ui-template*" }
 ```
 

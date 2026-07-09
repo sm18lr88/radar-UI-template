@@ -60,17 +60,20 @@ try {
     exitCode = smoke.status ?? 1
   }
 
-  const uninstallerName = readdirSync(installRoot).find((entry) => /^Uninstall .+\.exe$/i.test(entry))
-  if (exitCode === 0) {
-    if (!uninstallerName) {
+  const uninstallerName = existsSync(installRoot)
+    ? readdirSync(installRoot).find((entry) => /^Uninstall .+\.exe$/i.test(entry))
+    : undefined
+  if (!uninstallerName) {
+    if (exitCode === 0) {
       console.error(`Uninstaller not found in ${installRoot}`)
       exitCode = 1
-    } else {
-      const uninstall = spawnSync(join(installRoot, uninstallerName), ['/S'], { stdio: 'inherit' })
-      if (uninstall.error) console.error(uninstall.error.message)
-      exitCode = uninstall.status ?? 1
-      if (exitCode === 0) await waitForRemoval(installRoot)
     }
+  } else {
+    const uninstall = spawnSync(join(installRoot, uninstallerName), ['/S'], { stdio: 'inherit' })
+    if (uninstall.error) console.error(uninstall.error.message)
+    const uninstallExitCode = uninstall.status ?? 1
+    if (uninstallExitCode === 0) await waitForRemoval(installRoot)
+    else if (exitCode === 0) exitCode = uninstallExitCode
   }
 } finally {
   rmSync(installRoot, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })

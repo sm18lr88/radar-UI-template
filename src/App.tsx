@@ -5,7 +5,7 @@ import { Badge } from './components/ui/Badge'
 import { AppDemo } from './demo/AppDemo'
 import { PrimitivesPage } from './demo/PrimitivesPage'
 import { SiteDemo } from './demo/SiteDemo'
-import { navigateToRoute, routeFromLocation } from './routing'
+import { locationMatchesRoute, navigateToRoute, replaceCurrentRoute, routeFromLocation } from './routing'
 import { selectCommandItems, selectEnabledRoutes, selectNavItems } from './surface-registry'
 import { templateConfig } from './template.config'
 import type { AppRoute } from './types'
@@ -15,14 +15,21 @@ const enabledRoutes = selectEnabledRoutes(templateConfig.surfaces)
 const navItems = selectNavItems(templateConfig.surfaces)
 const commandItems = selectCommandItems(templateConfig.surfaces)
 
+function assertNever(value: never): never {
+  throw new Error(`Unhandled route: ${value}`)
+}
+
 function TemplateAppContent() {
   const [route, setRoute] = useState<AppRoute>(() => routeFromLocation(window.location, enabledRoutes))
   const [commandOpen, setCommandOpen] = useState(false)
 
   useEffect(() => {
     function syncRoute(): void {
-      setRoute(routeFromLocation(window.location, enabledRoutes))
+      const nextRoute = routeFromLocation(window.location, enabledRoutes)
+      if (!locationMatchesRoute(window.location, nextRoute)) replaceCurrentRoute(nextRoute)
+      setRoute(nextRoute)
     }
+    syncRoute()
     window.addEventListener('popstate', syncRoute)
     window.addEventListener('hashchange', syncRoute)
     return () => {
@@ -52,16 +59,28 @@ function TemplateAppContent() {
       <span className="hidden truncate text-sm text-theme-text-tertiary xl:inline">{templateConfig.brand.tagline}</span>
     </div>
   )
-  const content = route === '/primitives'
-      ? <PrimitivesPage />
-      : <AppDemo key={route} route={route} config={templateConfig} />
+  let content
+  switch (route) {
+    case '/app':
+    case '/app/table':
+    case '/app/detail':
+    case '/app/preferences':
+    case '/app/states':
+      content = <AppDemo key={route} route={route} config={templateConfig} />
+      break
+    case '/primitives':
+      content = <PrimitivesPage />
+      break
+    default:
+      content = assertNever(route)
+  }
 
   return (
     <>
       <AppShell
         brand={templateConfig.brand}
         navItems={navItems}
-        homePath={enabledRoutes[0]}
+        homePath={templateConfig.surfaces.defaultRoute}
         activePath={route}
         onNavigate={navigateToRoute}
         onOpenCommand={() => setCommandOpen(true)}

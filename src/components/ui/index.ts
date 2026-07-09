@@ -1,5 +1,6 @@
 export { Badge, StatusDot } from './Badge'
-export { Card, MetricTile } from './Card'
+export { Card, Facet, MetricTile, Summary } from './Card'
 export { Dialog } from './Dialog'
 export { PageHeader } from './PageHeader'
 export { EmptyState, ErrorState, LoadingState } from './StateBlocks'
+export { Tooltip } from './Tooltip'

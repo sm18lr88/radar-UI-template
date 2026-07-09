@@ -27,7 +27,10 @@ function contrastRatio(a: readonly [number, number, number], b: readonly [number
 test('dashboard shell supports theme and rail interactions', async ({ page }) => {
   await page.goto('/app')
   await expect(page.getByRole('heading', { name: /control room/i })).toBeVisible()
+  const wasDark = await page.locator('html').evaluate((element) => element.classList.contains('dark'))
   await page.getByRole('button', { name: /toggle theme/i }).click()
+  await page.reload()
+  await expect(page.locator('html')).toHaveClass(wasDark ? /^(?!.*dark)/ : /dark/)
   await page.getByRole('button', { name: /toggle theme/i }).click()
   const collapseButton = page.getByRole('button', { name: /collapse navigation/i })
   if (await collapseButton.count() > 0) {
@@ -54,6 +57,10 @@ test('command palette navigates and reports empty results', async ({ page }) => 
 })
 
 test('direct routes render their intended surfaces', async ({ page }) => {
+  await page.goto('/not-a-template-route')
+  await expect(page).toHaveURL(/\/app$/)
+  await expect(page.getByRole('heading', { name: /control room/i })).toBeVisible()
+
   await page.goto('/site')
   await expect(page.getByRole('heading', { name: /build product surfaces/i })).toBeVisible()
   const siteWasDark = await page.locator('html').evaluate((element) => element.classList.contains('dark'))
@@ -66,6 +73,11 @@ test('direct routes render their intended surfaces', async ({ page }) => {
   await page.goto('/app/states')
   await expect(page.getByText(/nothing here yet/i)).toBeVisible()
   await expect(page.getByText(/could not load preview/i)).toBeVisible()
+
+  await page.goto('/primitives')
+  const tooltipTrigger = page.locator('[tabindex="0"]').filter({ hasText: 'Focus or hover' })
+  await tooltipTrigger.focus()
+  await expect(page.getByRole('tooltip')).toBeVisible()
 })
 
 test('navigation remains usable at desktop and mobile widths', async ({ page }) => {
@@ -133,7 +145,7 @@ test('semantic text contrast passes in light and dark mode', async ({ page }) =>
         ['text-theme-text-tertiary', 'bg-theme-base'],
         ['text-theme-text-tertiary', 'bg-theme-surface'],
       ] as const
-      return classPairs.map(([foregroundClass, backgroundClass]) => {
+      const textPairs = classPairs.map(([foregroundClass, backgroundClass]) => {
         const element = document.createElement('span')
         element.className = `${foregroundClass} ${backgroundClass}`
         element.textContent = 'Contrast sample'
@@ -143,13 +155,40 @@ test('semantic text contrast passes in light and dark mode', async ({ page }) =>
         element.remove()
         return pair
       })
+      const focusSample = document.createElement('span')
+      focusSample.style.color = 'var(--border-focus)'
+      focusSample.style.backgroundColor = 'var(--bg-base)'
+      document.body.append(focusSample)
+      const focusStyle = getComputedStyle(focusSample)
+      const focusPair = { color: focusStyle.color, backgroundColor: focusStyle.backgroundColor }
+      focusSample.remove()
+      return { textPairs, focusPair }
     })
-    for (const pair of pairs) {
+    for (const pair of pairs.textPairs) {
       const foreground = parseRgb(pair.color)
       const background = parseRgb(pair.backgroundColor)
       expect(foreground).toBeDefined()
       expect(background).toBeDefined()
       if (foreground && background) expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(4.5)
     }
+    const focus = parseRgb(pairs.focusPair.color)
+    const focusBackground = parseRgb(pairs.focusPair.backgroundColor)
+    expect(focus).toBeDefined()
+    expect(focusBackground).toBeDefined()
+    if (focus && focusBackground) expect(contrastRatio(focus, focusBackground)).toBeGreaterThanOrEqual(3)
   }
+})
+
+test('responsive surfaces honor reduced motion without page overflow', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/app/table')
+  await expect(page.getByRole('heading', { name: 'Operational records' })).toBeVisible()
+  const result = await page.evaluate(() => ({
+    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+    hasOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    transitionDuration: getComputedStyle(document.querySelector('aside') ?? document.body).transitionDuration,
+  }))
+  expect(result.reducedMotion).toBe(true)
+  expect(result.hasOverflow).toBe(false)
+  expect(Number.parseFloat(result.transitionDuration)).toBeLessThanOrEqual(0.00001)
 })

@@ -73,8 +73,8 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
           aria-label="Search commands"
           aria-activedescendant={filtered[activeIndex] ? `${listboxId}-${filtered[activeIndex].id}` : undefined}
           aria-autocomplete="list"
-          aria-controls={listboxId}
-          aria-expanded="true"
+          aria-controls={filtered.length > 0 ? listboxId : undefined}
+          aria-expanded={filtered.length > 0}
           className="min-w-0 flex-1 bg-transparent text-base text-theme-text-primary outline-none"
           role="combobox"
           value={query}
@@ -87,10 +87,13 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
-      <div id={listboxId} className="max-h-[28rem] overflow-y-auto p-2" role="listbox">
-        {filtered.length === 0 ? (
+      {filtered.length === 0 ? (
+        <div className="p-2" role="status">
           <EmptyState compact title="No commands found" description="Try a different search or use the navigation rail." />
-        ) : filtered.map((command, index) => (
+        </div>
+      ) : (
+        <div id={listboxId} className="max-h-[28rem] overflow-y-auto p-2" role="listbox">
+          {filtered.map((command, index) => (
           <button
             key={command.id}
             id={`${listboxId}-${command.id}`}
@@ -111,8 +114,9 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
             </span>
             {command.shortcut ? <kbd className="inline-code text-sm font-medium text-theme-text-secondary">{command.shortcut}</kbd> : null}
           </button>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </dialog>
   )
 }

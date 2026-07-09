@@ -104,8 +104,11 @@ import {
   Badge,
   CommandPalette,
   Dialog,
+  Facet,
   PageHeader,
+  Summary,
   TemplateProviders,
+  Tooltip,
 } from 'radar-ui-template'
 import 'radar-ui-template/style.css'
 ```

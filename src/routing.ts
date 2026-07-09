@@ -11,6 +11,14 @@ export function routeFromLocation(location: RouteLocation, enabledRoutes: readon
     : enabledRoutes[0]
 }
 
+export function locationMatchesRoute(location: RouteLocation, route: AppRoute): boolean {
+  return location.protocol === 'file:' ? location.hash === `#${route}` : location.pathname === route
+}
+
+export function replaceCurrentRoute(path: AppRoute): void {
+  window.history.replaceState({}, '', window.location.protocol === 'file:' ? `#${path}` : path)
+}
+
 export function navigateToRoute(path: AppRoute): void {
   if (window.location.protocol === 'file:') {
     window.location.hash = path

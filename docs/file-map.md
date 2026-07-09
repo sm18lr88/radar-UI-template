@@ -15,7 +15,7 @@ LLM ownership map. Edit the owner file first; avoid cross-cutting changes unless
 | `src/theme/variables.css` | CSS variable source of truth | Pair token changes with `DESIGN.md`. |
 | `src/theme/tailwind-theme.css` | Tailwind v4 token mapping | No raw palette drift. |
 | `src/theme/components.css` | Shared component classes | Use for reusable classes, not one-off page styling. |
-| `src/components/ui/` | Public UI primitives | Export through `src/components/ui/index.ts` and `src/index.ts` when public. |
+| `src/components/ui/` | Public UI primitives, including Tooltip, Facet, and Summary | Export through `src/components/ui/index.ts` and `src/index.ts` when public. |
 | `src/components/shell/` | App chrome, nav rail, top bar | Reads config via props; do not hard-code app identity. |
 | `src/components/command/` | Searchable command palette | Commands come from config. |
 | `src/components/providers/` | Theme and toast providers | Keep provider stack in `TemplateProviders`. |

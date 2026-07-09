@@ -7,15 +7,20 @@ function assertUnique(values: readonly (string | number)[], label: string): void
   if (new Set(values).size !== values.length) throw new Error(`${label} must be unique`)
 }
 
+function assertOrders(values: readonly number[], label: string): void {
+  if (values.some((value) => !Number.isSafeInteger(value) || value < 0)) throw new Error(`${label} must be non-negative safe integers`)
+  assertUnique(values, label)
+}
+
 export function defineSurfaceRegistry<const Registry extends SurfaceRegistry>(registry: Registry): Registry {
   if (!registry.routes[registry.defaultRoute].enabled) throw new Error('The default route must be enabled')
 
   const navigation = APP_ROUTES.flatMap((route) => registry.routes[route].nav ?? [])
   const commands = APP_ROUTES.flatMap((route) => registry.routes[route].command ?? [])
   assertUnique(navigation.map((item) => item.id), 'Navigation IDs')
-  assertUnique(navigation.map((item) => item.order), 'Navigation order values')
+  assertOrders(navigation.map((item) => item.order), 'Navigation order values')
   assertUnique(commands.map((item) => item.id), 'Command IDs')
-  assertUnique(commands.map((item) => item.order), 'Command order values')
+  assertOrders(commands.map((item) => item.order), 'Command order values')
   return registry
 }
 

@@ -6,7 +6,8 @@ LLM inventory of reusable and private surfaces.
 
 - `Badge`: status, note, structural, and accent tones.
 - `StatusDot`: compact health/status indicator.
-- `Card`, `MetricTile`: reusable content surfaces.
+- `Card`, `MetricTile`, `Facet`, `Summary`: reusable content and compact-fact surfaces.
+- `Tooltip`: keyboard- and hover-accessible contextual text.
 - `Dialog`: modal container with overlay and close affordance.
 - `PageHeader`: consistent route hierarchy with optional action slot.
 - `EmptyState`, `LoadingState`, `ErrorState`: reusable state blocks.
@@ -16,9 +17,9 @@ Public primitives must be exported through `src/index.ts` before downstream use.
 
 ## Public composition surfaces
 
-- `AppShell`: configurable brand, nav, command trigger, scope slot, right extras, theme toggle.
+- `AppShell`: configurable brand, nav, command trigger, scope/account slots, right extras, chrome slots, theme toggle.
 - `CommandPalette`: command schema from config, keyboard navigation, empty results.
-- `ThemeProvider`: light/dark class and `colorScheme` with local storage.
+- `ThemeProvider`: light/dark class and `colorScheme` with configurable local-storage key and optional change callback.
 - `ToastProvider`: theme-aware toast stack.
 
 These are intentionally exported through `src/index.ts`, along with their named prop/context types. Import them from the package root rather than deep paths.

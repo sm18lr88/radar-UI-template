@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useEffectEvent, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 export type Theme = 'light' | 'dark'
@@ -9,14 +9,18 @@ export type ThemeContextValue = {
   readonly setTheme: (theme: Theme) => void
 }
 
-export type ThemeProviderProps = { readonly children: ReactNode }
+export type ThemeProviderProps = {
+  readonly children: ReactNode
+  readonly storageKey?: string
+  readonly onThemeChange?: (theme: Theme) => void
+}
 
 const THEME_KEY = 'radar-ui-template-theme'
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
-function readInitialTheme(): Theme {
+function readInitialTheme(storageKey: string): Theme {
   if (typeof window === 'undefined') return 'dark'
-  const stored = window.localStorage.getItem(THEME_KEY)
+  const stored = window.localStorage.getItem(storageKey)
   if (stored === 'light' || stored === 'dark') return stored
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
@@ -26,13 +30,15 @@ function applyTheme(theme: Theme): void {
   document.documentElement.style.colorScheme = theme
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(readInitialTheme)
+export function ThemeProvider({ children, storageKey = THEME_KEY, onThemeChange }: ThemeProviderProps) {
+  const [theme, setThemeState] = useState<Theme>(() => readInitialTheme(storageKey))
+  const notifyThemeChange = useEffectEvent((nextTheme: Theme) => onThemeChange?.(nextTheme))
 
   useEffect(() => {
     applyTheme(theme)
-    window.localStorage.setItem(THEME_KEY, theme)
-  }, [theme])
+    window.localStorage.setItem(storageKey, theme)
+    notifyThemeChange(theme)
+  }, [storageKey, theme])
 
   const value = useMemo<ThemeContextValue>(() => ({
     theme,

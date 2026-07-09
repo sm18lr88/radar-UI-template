@@ -16,6 +16,20 @@ export type MetricTileProps = {
   readonly children: ReactNode
 }
 
+export type FacetProps = {
+  readonly label: string
+  readonly value: ReactNode
+}
+
+export type SummaryItem = {
+  readonly label: string
+  readonly value: ReactNode
+}
+
+export type SummaryProps = {
+  readonly items: readonly SummaryItem[]
+}
+
 export function Card({ title, eyebrow, action, className, children }: CardProps) {
   return (
     <section className={clsx('rounded-xl border border-theme-border bg-theme-surface shadow-theme-sm', className)}>
@@ -43,5 +57,27 @@ export function MetricTile({ label, value, change, children }: MetricTileProps) 
       <p className="mt-4 text-3xl font-semibold tracking-tight text-theme-text-primary">{value}</p>
       <p className="mt-1 text-sm text-theme-text-tertiary">{change}</p>
     </div>
+  )
+}
+
+export function Facet({ label, value }: FacetProps) {
+  return (
+    <div className="card-inner-lg min-w-0">
+      <p className="text-xs text-theme-text-tertiary">{label}</p>
+      <div className="mt-1 truncate text-sm font-medium text-theme-text-primary">{value}</div>
+    </div>
+  )
+}
+
+export function Summary({ items }: SummaryProps) {
+  return (
+    <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <div key={item.label} className="card-inner-lg">
+          <dt className="text-xs text-theme-text-tertiary">{item.label}</dt>
+          <dd className="mt-1 text-sm font-medium text-theme-text-primary">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }

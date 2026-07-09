@@ -86,6 +86,9 @@ function createMainWindow() {
   mainWindow.webContents.on('will-navigate', (event, targetUrl) => {
     if (!isAllowedAppUrl(targetUrl)) event.preventDefault()
   })
+  mainWindow.webContents.on('will-frame-navigate', (event, targetUrl) => {
+    if (!isAllowedAppUrl(targetUrl)) event.preventDefault()
+  })
   mainWindow.webContents.session.setPermissionCheckHandler(() => false)
   mainWindow.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false))
   mainWindow.once('ready-to-show', () => mainWindow?.show())
@@ -99,7 +102,7 @@ function createMainWindow() {
   })
   mainWindow.loadFile(indexPath()).catch((error) => {
     console.error('Failed to load desktop app:', error)
-    app.quit()
+    app.exit(1)
   })
 }
 

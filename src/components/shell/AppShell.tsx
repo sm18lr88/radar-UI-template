@@ -12,7 +12,16 @@ export type AppShellProps = {
   readonly onOpenCommand: () => void
   readonly scopeControls?: ShellSlot
   readonly rightExtras?: ShellSlot
+  readonly accountSlot?: ShellSlot
+  readonly chrome?: AppShellChrome
   readonly children: ShellSlot
+}
+
+export type AppShellChrome = {
+  readonly navStart?: ShellSlot
+  readonly navEnd?: ShellSlot
+  readonly headerStart?: ShellSlot
+  readonly headerEnd?: ShellSlot
 }
 
 function isActive(activePath: AppRoute, item: NavItem): boolean {
@@ -20,7 +29,7 @@ function isActive(activePath: AppRoute, item: NavItem): boolean {
   return activePath.startsWith(item.path)
 }
 
-export function AppShell({ brand, navItems, homePath, activePath, onNavigate, onOpenCommand, scopeControls, rightExtras, children }: AppShellProps) {
+export function AppShell({ brand, navItems, homePath, activePath, onNavigate, onOpenCommand, scopeControls, rightExtras, accountSlot, chrome, children }: AppShellProps) {
   const [pinned, setPinned] = useState(true)
   const { theme, toggleTheme } = useTheme()
 
@@ -44,6 +53,7 @@ export function AppShell({ brand, navItems, homePath, activePath, onNavigate, on
           ) : null}
         </div>
         <nav className="flex-1 space-y-1 px-2 py-3" aria-label="Primary navigation">
+          {chrome?.navStart}
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(activePath, item)
@@ -61,6 +71,7 @@ export function AppShell({ brand, navItems, homePath, activePath, onNavigate, on
               </button>
             )
           })}
+          {chrome?.navEnd}
         </nav>
         <div className="border-t-subtle p-2">
           <button className="flex w-full items-center justify-center rounded-xl p-2 text-theme-text-secondary hover:bg-theme-hover" type="button" onClick={() => setPinned((value) => !value)} aria-label={pinned ? 'Collapse navigation' : 'Expand navigation'}>
@@ -70,6 +81,7 @@ export function AppShell({ brand, navItems, homePath, activePath, onNavigate, on
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex min-h-16 items-center gap-3 border-b-subtle bg-theme-base/90 px-4 backdrop-blur-xl">
+          {chrome?.headerStart}
           <select
             aria-label="Navigate"
             className="min-w-0 max-w-36 rounded-lg border border-theme-border bg-theme-surface px-2 py-2 text-sm text-theme-text-primary md:hidden"
@@ -88,6 +100,8 @@ export function AppShell({ brand, navItems, homePath, activePath, onNavigate, on
           </button>
           <div className="hidden min-w-0 flex-1 sm:block">{scopeControls}</div>
           <div className="hidden sm:block">{rightExtras}</div>
+          {chrome?.headerEnd}
+          {accountSlot}
           <button className="rounded-xl border border-theme-border bg-theme-surface p-2 text-theme-text-secondary shadow-theme-sm hover:bg-theme-hover" type="button" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === 'dark' ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}
           </button>

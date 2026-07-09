@@ -11,7 +11,7 @@ export type BadgeProps = {
 
 export type StatusDotProps = {
   readonly tone: Tone
-  readonly label?: string
+  readonly label: string
 }
 
 const toneClasses: Record<BadgeTone, string> = {
