@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process'
-import { cpSync, mkdtempSync, rmSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -16,6 +17,26 @@ const tempRoot = mkdtempSync(join(tmpdir(), 'radar-ui-template-smoke-'))
 const destination = join(tempRoot, 'template')
 const excludedNames = new Set(['.git', 'dist', 'node_modules', 'playwright-report', 'release', 'test-results'])
 let exitCode = 0
+
+function snapshotDirectory(directory) {
+  if (!existsSync(directory)) return undefined
+  const hash = createHash('sha256')
+  function visit(current) {
+    for (const entry of readdirSync(current).sort()) {
+      const path = join(current, entry)
+      if (statSync(path).isDirectory()) visit(path)
+      else {
+        hash.update(path.slice(directory.length))
+        hash.update(readFileSync(path))
+      }
+    }
+  }
+  visit(directory)
+  return hash.digest('hex')
+}
+
+const sourceDist = join(sourceRoot, 'dist')
+const sourceDistBefore = snapshotDirectory(sourceDist)
 
 try {
   cpSync(sourceRoot, destination, {
@@ -37,6 +58,10 @@ try {
       exitCode = result.status ?? 1
       break
     }
+  }
+  if (snapshotDirectory(sourceDist) !== sourceDistBefore) {
+    console.error('copy-smoke changed the source dist directory')
+    exitCode = 1
   }
 } finally {
   rmSync(tempRoot, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })

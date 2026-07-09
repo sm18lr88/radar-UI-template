@@ -126,6 +126,7 @@ import type {
   AppShellProps,
   BadgeProps,
   CardProps,
+  CommandItem,
   CommandPaletteProps,
   DemoRecord,
   DialogProps,
@@ -166,7 +167,7 @@ const values = [
   selectEnabledRoutes, selectNavItems, Tooltip,
   templateConfig, useTheme, useToast,
 ]
-type PublicTypes = AppRoute | AppShellChrome | AppShellProps | BadgeProps | CardProps |
+type PublicTypes = AppRoute | AppShellChrome | AppShellProps | BadgeProps | CardProps | CommandItem |
   CommandPaletteProps | DemoRecord | DialogProps | EmptyStateProps | ErrorStateProps | FacetProps |
   LoadingStateProps | MetricTileProps | PageHeaderProps | StatusDotProps | SummaryItem | SummaryProps |
   ShellSlot | SurfaceCommand | SurfaceDefinition | SurfaceNav | SurfaceRegistry |
@@ -174,8 +175,17 @@ type PublicTypes = AppRoute | AppShellChrome | AppShellProps | BadgeProps | Card
   ThemeProviderProps | Toast | ToastContextValue | ToastInput | ToastProviderProps | TooltipProps |
   WebsiteContent | WebsiteFaq | WebsiteFeature
 const publicType: PublicTypes | undefined = undefined
+const actionCommand: CommandItem = {
+  id: 'run-action',
+  label: 'Run action',
+  description: 'Exercise a non-navigation command',
+  action: () => undefined,
+  group: 'Actions',
+  keywords: ['action'],
+}
 void values
 void publicType
+void actionCommand
 `
 
   writeFileSync(join(consumerRoot, 'package.json'), `${JSON.stringify(consumerMetadata, null, 2)}\n`)

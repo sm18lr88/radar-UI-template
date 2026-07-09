@@ -35,7 +35,7 @@ Open the local Vite URL, then start adapting `src/template.config.ts`.
 
 ## Command-first navigation
 
-The command palette uses a modal combobox/listbox interaction with Arrow, Home, End, Enter, Escape, focus containment, and focus restoration.
+The command palette uses a modal combobox/listbox interaction with Arrow, Home, End, Enter, Escape, focus containment, and focus restoration. Commands may navigate to typed routes or run arbitrary injected actions, and can include groups, icons, shortcuts, and keywords.
 
 ![Command palette in dark mode](docs/images/command-palette.png)
 
@@ -69,6 +69,8 @@ surfaces: defineSurfaceRegistry({
 ```
 
 Set `enabled: false` once and the route disappears from route validation, navigation, and commands together. Page rendering remains explicit in `src/App.tsx`; the registry does not own components, loaders, permissions, or runtime state.
+
+`AppShell` also accepts a custom `brandMark`, `accountSlot`, and structured `chrome` slots. `ThemeProvider` accepts a custom storage key and optional `onThemeChange` callback for host integration.
 
 ## Detail and operational surfaces
 

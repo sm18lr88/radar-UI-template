@@ -21,7 +21,10 @@ export type CommandItem = {
   readonly id: string
   readonly label: string
   readonly description: string
-  readonly path: AppRoute
+  readonly path?: AppRoute
+  readonly action?: () => void
+  readonly icon?: LucideIcon
+  readonly group?: string
   readonly shortcut?: string
   readonly keywords: readonly string[]
 }
@@ -30,7 +33,7 @@ export type SurfaceNav = Omit<NavItem, 'path'> & {
   readonly order: number
 }
 
-export type SurfaceCommand = Omit<CommandItem, 'path'> & {
+export type SurfaceCommand = Omit<CommandItem, 'path' | 'action'> & {
   readonly order: number
 }
 
@@ -49,6 +52,7 @@ export type TemplateBrand = {
   readonly appName: string
   readonly tagline: string
   readonly markLabel: string
+  readonly shellSubtitle: string
   readonly websiteTitle: string
   readonly websiteLead: string
 }
@@ -69,6 +73,7 @@ export type WebsiteContent = {
   readonly primaryCta: string
   readonly secondaryCta: string
   readonly features: readonly WebsiteFeature[]
+  readonly proofItems: readonly string[]
   readonly faqTitle: string
   readonly faq: readonly WebsiteFaq[]
   readonly footer: string

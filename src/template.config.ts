@@ -7,6 +7,7 @@ export const templateConfig = {
     appName: 'Northstar Console',
     tagline: 'A cool, dense control room for modern product teams.',
     markLabel: 'N',
+    shellSubtitle: 'Template shell',
     websiteTitle: 'Build product surfaces that feel as sharp as your infrastructure.',
     websiteLead: 'Start from a Radar-inspired shell, token system, and component kit built for apps, websites, and future agents.',
   },
@@ -20,6 +21,7 @@ export const templateConfig = {
       { title: 'Token-first styling', description: 'Build with Radar-inspired semantic tokens that stay coherent in light and dark modes.' },
       { title: 'Browser QA ready', description: 'Ship with responsive, keyboard, contrast, browser, and Electron smoke coverage.' },
     ],
+    proofItems: ['TypeScript 7 verified', '45 browser checks', 'Browser + Electron delivery'],
     faqTitle: 'FAQ',
     faq: [
       { question: 'Can I rebrand it?', answer: 'Yes. Start with `src/template.config.ts`, then follow the rebrand checklist.' },

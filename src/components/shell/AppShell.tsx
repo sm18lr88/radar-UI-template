@@ -7,6 +7,7 @@ export type AppShellProps = {
   readonly brand: TemplateBrand
   readonly navItems: readonly NavItem[]
   readonly homePath: AppRoute
+  readonly brandMark?: ShellSlot
   readonly activePath: AppRoute
   readonly onNavigate: (path: AppRoute) => void
   readonly onOpenCommand: () => void
@@ -29,7 +30,7 @@ function isActive(activePath: AppRoute, item: NavItem): boolean {
   return activePath.startsWith(item.path)
 }
 
-export function AppShell({ brand, navItems, homePath, activePath, onNavigate, onOpenCommand, scopeControls, rightExtras, accountSlot, chrome, children }: AppShellProps) {
+export function AppShell({ brand, navItems, homePath, brandMark, activePath, onNavigate, onOpenCommand, scopeControls, rightExtras, accountSlot, chrome, children }: AppShellProps) {
   const [pinned, setPinned] = useState(true)
   const { theme, toggleTheme } = useTheme()
 
@@ -43,12 +44,12 @@ export function AppShell({ brand, navItems, homePath, activePath, onNavigate, on
       <aside className={`${pinned ? 'w-64' : 'w-[4.5rem]'} hidden shrink-0 border-r-subtle bg-theme-sidebar transition-[width] duration-200 md:flex md:flex-col`}>
         <div className="flex h-16 items-center gap-3 border-b-subtle px-3">
           <button className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent text-sm font-bold text-white shadow-glow-brand-sm" type="button" onClick={() => onNavigate(homePath)} aria-label="Go to default route">
-            {brand.markLabel}
+            {brandMark ?? brand.markLabel}
           </button>
           {pinned ? (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-theme-text-primary">{brand.appName}</p>
-              <p className="truncate text-xs text-theme-text-tertiary">Template shell</p>
+              <p className="truncate text-xs text-theme-text-tertiary">{brand.shellSubtitle}</p>
             </div>
           ) : null}
         </div>

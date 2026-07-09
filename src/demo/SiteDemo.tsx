@@ -35,6 +35,14 @@ export function SiteDemo({ config }: { readonly config: TemplateConfig }) {
           </div>
         ) : null}
       </section>
+      <section className="grid gap-3 rounded-2xl border border-theme-border bg-theme-surface p-4 shadow-theme-sm sm:grid-cols-3" aria-label="Template proof points">
+        {config.website.proofItems.map((item) => (
+          <div key={item} className="flex items-center gap-2 text-sm text-theme-text-secondary">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-status-success" aria-hidden="true" />
+            <span>{item}</span>
+          </div>
+        ))}
+      </section>
       <section className="grid gap-4 md:grid-cols-3">
         {config.website.features.map((feature) => (
           <Card key={feature.title} title={feature.title} eyebrow="Feature">

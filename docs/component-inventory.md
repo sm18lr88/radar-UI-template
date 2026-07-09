@@ -18,7 +18,7 @@ Public primitives must be exported through `src/index.ts` before downstream use.
 ## Public composition surfaces
 
 - `AppShell`: configurable brand, nav, command trigger, scope/account slots, right extras, chrome slots, theme toggle.
-- `CommandPalette`: command schema from config, keyboard navigation, empty results.
+- `CommandPalette`: route or action commands with groups, icons, shortcuts, keywords, keyboard navigation, and empty results.
 - `ThemeProvider`: light/dark class and `colorScheme` with configurable local-storage key and optional change callback.
 - `ToastProvider`: theme-aware toast stack.
 

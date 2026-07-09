@@ -17,7 +17,7 @@ LLM ownership map. Edit the owner file first; avoid cross-cutting changes unless
 | `src/theme/components.css` | Shared component classes | Use for reusable classes, not one-off page styling. |
 | `src/components/ui/` | Public UI primitives, including Tooltip, Facet, and Summary | Export through `src/components/ui/index.ts` and `src/index.ts` when public. |
 | `src/components/shell/` | App chrome, nav rail, top bar | Reads config via props; do not hard-code app identity. |
-| `src/components/command/` | Searchable command palette | Commands come from config. |
+| `src/components/command/` | Searchable command palette | Route commands come from config; consumers may inject grouped icon/action commands. |
 | `src/components/providers/` | Theme and toast providers | Keep provider stack in `TemplateProviders`. |
 | `src/demo/` | Copyable example pages | Replace for products; do not treat as reusable API. |
 | `src/tests/smoke.spec.ts` | Browser behavior and contrast smoke | Covers browser build, routes, command palette, theme. |

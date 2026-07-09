@@ -89,7 +89,9 @@ function TemplateAppContent() {
       >
         {content}
       </AppShell>
-      <CommandPalette open={commandOpen} commands={commandItems} onClose={() => setCommandOpen(false)} onSelect={navigateToRoute} />
+      <CommandPalette open={commandOpen} commands={commandItems} onClose={() => setCommandOpen(false)} onSelect={(command) => {
+        if (command.path) navigateToRoute(command.path)
+      }} />
     </>
   )
 }

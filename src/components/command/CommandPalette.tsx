@@ -8,7 +8,7 @@ export type CommandPaletteProps = {
   readonly open: boolean
   readonly commands: readonly CommandItem[]
   readonly onClose: () => void
-  readonly onSelect: (path: CommandItem['path']) => void
+  readonly onSelect?: (command: CommandItem) => void
 }
 
 type CommandPaletteContentProps = Omit<CommandPaletteProps, 'open'>
@@ -16,7 +16,7 @@ type CommandPaletteContentProps = Omit<CommandPaletteProps, 'open'>
 function matchesCommand(command: CommandItem, query: string): boolean {
   const normalized = query.trim().toLowerCase()
   if (!normalized) return true
-  const haystack = [command.label, command.description, ...command.keywords].join(' ').toLowerCase()
+  const haystack = [command.label, command.description, command.group ?? '', ...command.keywords].join(' ').toLowerCase()
   return haystack.includes(normalized)
 }
 
@@ -26,6 +26,11 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
   const listboxId = useId()
   const dialogRef = useModalDialog(true, onClose)
   const filtered = useMemo(() => commands.filter((command) => matchesCommand(command, query)), [commands, query])
+  function activateCommand(command: CommandItem): void {
+    command.action?.()
+    onSelect?.(command)
+    onClose()
+  }
   const onPaletteKeyDown = useEffectEvent((event: KeyboardEvent) => {
     if (event.isComposing || !(event.target instanceof HTMLInputElement) || event.target.getAttribute('role') !== 'combobox') return
     if (event.key === 'ArrowDown') {
@@ -47,10 +52,7 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
     if (event.key === 'Enter') {
       event.preventDefault()
       const command = filtered[activeIndex]
-      if (command) {
-        onSelect(command.path)
-        onClose()
-      }
+      if (command) activateCommand(command)
     }
   })
 
@@ -93,28 +95,32 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
         </div>
       ) : (
         <div id={listboxId} className="max-h-[28rem] overflow-y-auto p-2" role="listbox">
-          {filtered.map((command, index) => (
-          <button
-            key={command.id}
-            id={`${listboxId}-${command.id}`}
-            aria-selected={index === activeIndex}
-            className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-colors ${index === activeIndex ? 'selection-strong selection-ring' : 'hover:bg-theme-hover'}`}
-            type="button"
-            role="option"
-            tabIndex={-1}
-            onMouseEnter={() => setActiveIndex(index)}
-            onClick={() => {
-              onSelect(command.path)
-              onClose()
-            }}
-          >
-            <span>
-              <span className="block text-sm font-medium text-theme-text-primary">{command.label}</span>
-              <span className="text-xs text-theme-text-secondary">{command.description}</span>
-            </span>
-            {command.shortcut ? <kbd className="inline-code text-sm font-medium text-theme-text-secondary">{command.shortcut}</kbd> : null}
-          </button>
-          ))}
+          {filtered.map((command, index) => {
+            const Icon = command.icon
+            return (
+              <button
+                key={command.id}
+                id={`${listboxId}-${command.id}`}
+                aria-selected={index === activeIndex}
+                className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-colors ${index === activeIndex ? 'selection-strong selection-ring' : 'hover:bg-theme-hover'}`}
+                type="button"
+                role="option"
+                tabIndex={-1}
+                onMouseEnter={() => setActiveIndex(index)}
+                onClick={() => activateCommand(command)}
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  {Icon ? <Icon className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" /> : null}
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium text-theme-text-primary">{command.label}</span>
+                    <span className="text-xs text-theme-text-secondary">{command.description}</span>
+                    {command.group ? <span className="mt-1 block text-[0.7rem] uppercase tracking-[0.12em] text-theme-text-tertiary">{command.group}</span> : null}
+                  </span>
+                </span>
+                {command.shortcut ? <kbd className="inline-code text-sm font-medium text-theme-text-secondary">{command.shortcut}</kbd> : null}
+              </button>
+            )
+          })}
         </div>
       )}
     </dialog>
@@ -122,7 +128,7 @@ function CommandPaletteContent({ commands, onClose, onSelect }: CommandPaletteCo
 }
 
 export function CommandPalette({ open, commands, onClose, onSelect }: CommandPaletteProps) {
-  return open ? <CommandPaletteContent commands={commands} onClose={onClose} onSelect={onSelect} /> : null
+  return open ? <CommandPaletteContent commands={commands} onClose={onClose} onSelect={onSelect ?? (() => undefined)} /> : null
 }
 
 export { matchesCommand }
