@@ -1,0 +1,116 @@
+{
+  "name": "radar-ui-template",
+  "productName": "Radar UI Template",
+  "version": "0.1.0",
+  "private": true,
+  "author": "sm18lr88",
+  "contributors": [
+    "Skyhook — original Radar project and design language"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sm18lr88/radar-UI-template.git"
+  },
+  "homepage": "https://github.com/sm18lr88/radar-UI-template#readme",
+  "bugs": {
+    "url": "https://github.com/sm18lr88/radar-UI-template/issues"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "description": "A reusable Radar-inspired React, Vite, Tailwind, and Electron template for polished desktop apps and websites.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./style.css": "./src/index.css",
+    "./theme": "./src/theme/index.ts",
+    "./theme/variables.css": "./src/theme/variables.css",
+    "./theme/tailwind-theme.css": "./src/theme/tailwind-theme.css",
+    "./theme/components.css": "./src/theme/components.css"
+  },
+  "files": [
+    "src",
+    "!src/tests/**/*",
+    "AGENTS.md",
+    "README.md",
+    "DESIGN.md",
+    "LICENSE",
+    "docs"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "check:typescript": "node ./scripts/check-typescript.mjs",
+    "tsc": "npm run check:typescript && tsc -b --noEmit",
+    "build": "npm run tsc && vite build",
+    "desktop:build": "npm run tsc && node ./scripts/desktop-build.mjs",
+    "desktop": "npm run desktop:build && electron ./electron/main.cjs",
+    "desktop:dir": "npm run desktop:build && node ./scripts/desktop-package.mjs dir",
+    "desktop:pack": "npm run desktop:build && node ./scripts/desktop-package.mjs portable",
+    "desktop:installer": "npm run desktop:build && node ./scripts/desktop-package.mjs nsis",
+    "desktop:install-smoke": "npm run desktop:installer && node ./scripts/desktop-install-smoke.mjs",
+    "desktop:smoke": "npm run desktop:build && node ./scripts/desktop-smoke.mjs",
+    "preview": "vite preview",
+    "smoke": "npm run build && playwright test",
+    "copy-smoke": "node ./scripts/copy-smoke.mjs",
+    "package-smoke": "node ./scripts/package-smoke.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.2.8",
+    "@fontsource/dm-mono": "^5.2.7",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.24.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/node": "^26.0.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "electron": "43.1.0",
+    "electron-builder": "26.15.3",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4"
+  },
+  "build": {
+    "appId": "io.skyhook.radar-ui-template",
+    "npmRebuild": false,
+    "extraMetadata": {
+      "main": "./electron/main.cjs"
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "files": [
+      "assets/icon.png",
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "win": {
+      "icon": "assets/icon.png",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "sideEffects": [
+    "**/*.css"
+  ]
+}

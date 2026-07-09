@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light;
+  --color-brand: light-dark(#4A7CC9, #6A9FE0);
+  --color-brand-light: light-dark(#3B66A8, #8BB5EA);
+  --brand-rgb: light-dark(74 124 201, 106 159 224);
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  --bg-sidebar: light-dark(#E7ECF5, #080B16);
+  --bg-base: light-dark(#F0F3F9, #0B0F1E);
+  --bg-surface: light-dark(#F8FBFE, #14192A);
+  --bg-elevated: light-dark(#E6ECF5, #1E2338);
+  --bg-hover: light-dark(#DDE5F2, #282E48);
+  --bg-active: light-dark(#D3DCEC, #1C2840);
+  --text-primary: light-dark(#1A1C20, #F5F6F8);
+  --text-secondary: light-dark(#555860, #D8DAE0);
+  --text-tertiary: light-dark(#646A78, #B0B5C0);
+  --text-disabled: light-dark(#A0A4AC, #6A7080);
+  --border-default: light-dark(#D8E0EE, #222840);
+  --border-light: light-dark(#CDD6E8, #2C324A);
+  --border-subtle: light-dark(rgba(74, 100, 180, 0.07), rgba(255, 255, 255, 0.04));
+  --border-focus: var(--color-brand);
+  --accent: var(--color-brand);
+  --accent-light: var(--color-brand-light);
+  --accent-muted: light-dark(rgba(74, 124, 201, 0.12), rgba(106, 159, 224, 0.18));
+  --accent-text: light-dark(#3B66A8, #8BB5EA);
+  --selection-bg: light-dark(rgba(74, 124, 201, 0.10), rgba(106, 159, 224, 0.15));
+  --selection-bg-strong: light-dark(rgba(74, 124, 201, 0.20), rgba(106, 159, 224, 0.25));
+  --selection-text: light-dark(#3B66A8, #8BB5EA);
+  --selection-border: light-dark(rgba(74, 124, 201, 0.30), rgba(106, 159, 224, 0.30));
+  --glow-brand: light-dark(rgba(74, 124, 201, 0.2), rgba(106, 159, 224, 0.25));
+  --glow-brand-sm: 0 0 8px var(--glow-brand);
+  --glow-brand-md: 0 0 16px var(--glow-brand);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 12px 32px -6px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+  --shadow-drawer: -12px 0 40px rgba(0,0,0,0.15), -4px 0 12px rgba(0,0,0,0.08);
+  --scrollbar-track: light-dark(#E6ECF5, #0F1322);
+  --scrollbar-thumb: light-dark(#CDD6E8, #2C324A);
+  --scrollbar-thumb-hover: light-dark(#AABACF, #484C55);
+}
+
+.dark {
+  color-scheme: dark;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-lg: 0 12px 32px -6px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.1);
+  --shadow-drawer: -16px 0 60px rgba(0,0,0,0.6), -6px 0 20px rgba(0,0,0,0.4);
+}
