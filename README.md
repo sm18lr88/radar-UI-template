@@ -117,6 +117,8 @@ import 'radar-ui-template/style.css'
 
 `src/index.ts` is the public allowlist. Demo pages, routing transport, modal internals, scripts, and the Electron main process remain private implementation surfaces.
 
+The stylesheet registers the package's TypeScript sources with Tailwind CSS v4, so consumers using the Tailwind Vite plugin receive the utilities used by package components. Tailwind CSS 4 is declared as a peer dependency.
+
 ## Browser and desktop commands
 
 | Goal | Command |

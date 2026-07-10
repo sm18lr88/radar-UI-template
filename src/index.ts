@@ -7,7 +7,7 @@ export { CommandPalette, matchesCommand } from './components/command/CommandPale
 export type { CommandPaletteProps } from './components/command/CommandPalette'
 export { AppShell } from './components/shell/AppShell'
 export type { AppShellChrome, AppShellProps } from './components/shell/AppShell'
-export { ThemeProvider, useTheme } from './theme'
+export { ThemeProvider, useTheme } from './components/providers/ThemeProvider'
 export type { Theme, ThemeContextValue, ThemeProviderProps } from './components/providers/ThemeProvider'
 export { ToastProvider, useToast } from './components/providers/ToastProvider'
 export type { Toast, ToastContextValue, ToastInput, ToastProviderProps } from './components/providers/ToastProvider'

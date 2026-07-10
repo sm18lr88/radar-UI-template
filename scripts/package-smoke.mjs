@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -47,11 +47,15 @@ try {
     'package.json',
     'src/index.css',
     'src/index.ts',
+    'src/style.css.d.ts',
   ]
   for (const file of requiredFiles) {
     if (!packedFiles.has(file)) throw new Error(`Packed package is missing ${file}`)
   }
-  for (const target of Object.values(packageMetadata.exports)) {
+  const exportTargets = Object.values(packageMetadata.exports).flatMap((target) =>
+    typeof target === 'string' ? [target] : Object.values(target),
+  )
+  for (const target of exportTargets) {
     const packedTarget = target.replace(/^\.\//, '')
     if (!packedFiles.has(packedTarget)) throw new Error(`Package export target is missing ${packedTarget}`)
   }
@@ -66,15 +70,22 @@ try {
   const consumerMetadata = {
     private: true,
     type: 'module',
+    scripts: {
+      build: 'vite build',
+    },
     dependencies: {
       [packageMetadata.name]: `file:${tarballPath}`,
       react: packageMetadata.devDependencies.react,
       'react-dom': packageMetadata.devDependencies['react-dom'],
+      tailwindcss: packageMetadata.peerDependencies.tailwindcss,
     },
     devDependencies: {
+      '@tailwindcss/vite': packageMetadata.devDependencies['@tailwindcss/vite'],
       '@types/react': packageMetadata.devDependencies['@types/react'],
       '@types/react-dom': packageMetadata.devDependencies['@types/react-dom'],
+      '@vitejs/plugin-react': packageMetadata.devDependencies['@vitejs/plugin-react'],
       typescript: packageMetadata.devDependencies.typescript,
+      vite: packageMetadata.devDependencies.vite,
     },
   }
   const tsconfig = {
@@ -89,6 +100,7 @@ try {
     include: ['consumer.tsx'],
   }
   const consumerSource = `
+import { createRoot } from 'react-dom/client'
 import {
   AppShell,
   APP_ROUTES,
@@ -120,6 +132,7 @@ import {
   useTheme,
   useToast,
 } from '${packageMetadata.name}'
+import '${packageMetadata.name}/style.css'
 import type {
   AppRoute,
   AppShellChrome,
@@ -186,17 +199,41 @@ const actionCommand: CommandItem = {
 void values
 void publicType
 void actionCommand
+
+const root = document.getElementById('root')
+if (!root) throw new Error('Consumer root element is missing')
+createRoot(root).render(<Card><Badge tone="success">Package styles loaded</Badge></Card>)
 `
+
+  const viteConfig = `
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+
+export default defineConfig({ plugins: [react(), tailwindcss()] })
+`
+
+  const indexHtml = '<!doctype html><html><body><div id="root"></div><script type="module" src="/consumer.tsx"></script></body></html>\n'
 
   writeFileSync(join(consumerRoot, 'package.json'), `${JSON.stringify(consumerMetadata, null, 2)}\n`)
   writeFileSync(join(consumerRoot, 'tsconfig.json'), `${JSON.stringify(tsconfig, null, 2)}\n`)
   writeFileSync(join(consumerRoot, 'consumer.tsx'), consumerSource.trimStart())
+  writeFileSync(join(consumerRoot, 'vite.config.ts'), viteConfig.trimStart())
+  writeFileSync(join(consumerRoot, 'index.html'), indexHtml)
 
   runNpm(['install', '--ignore-scripts', '--no-audit', '--no-fund'], consumerRoot)
   const tscPath = join(consumerRoot, 'node_modules', 'typescript', 'bin', 'tsc')
   const typecheck = spawnSync(process.execPath, [tscPath, '--project', 'tsconfig.json'], { cwd: consumerRoot, stdio: 'inherit' })
   if (typecheck.error) throw typecheck.error
   if (typecheck.status !== 0) throw new Error(`Detached consumer typecheck exited with ${typecheck.status ?? 1}`)
+  runNpm(['run', 'build'], consumerRoot)
+  const assetsRoot = join(consumerRoot, 'dist', 'assets')
+  const cssAsset = readdirSync(assetsRoot).find((file) => file.endsWith('.css'))
+  if (!cssAsset) throw new Error('Detached consumer build did not emit CSS')
+  const compiledCss = readFileSync(join(assetsRoot, cssAsset), 'utf8')
+  if (!compiledCss.includes('.bg-theme-surface')) {
+    throw new Error('Detached consumer CSS is missing package component utilities')
+  }
 } catch (error) {
   console.error(error instanceof Error ? error.message : error)
   exitCode = 1
